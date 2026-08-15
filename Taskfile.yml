@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  APP: docker compose --profile app
+  INFRA: docker compose --profile infra
+  ALL: docker compose --profile app --profile infra
+
+
+tasks:
+  # --- backend ---
+  build:
+    desc: Build the backend binary
+    dir: backend
+    cmds:
+      - go build -o ../bj ./cmd
+
+  run:
+    desc: Run the backend locally
+    dir: backend
+    cmds:
+      - go run ./cmd
+
+  test:
+    desc: Run backend tests
+    dir: backend
+    cmds:
+      - go test ./...
+
+  lint:
+    desc: Run go vet on backend
+    dir: backend
+    cmds:
+      - go vet ./...
+
+  # --- docker: all ---
+  up:
+    desc: Start all services (app + infra)
+    cmds:
+      - "{{.ALL}} up --build -d"
+
+  down:
+    desc: Stop all services
+    cmds:
+      - "{{.ALL}} down"
